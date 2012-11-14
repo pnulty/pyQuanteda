@@ -11,6 +11,7 @@ class Corpus(object):
 			self.documents = []
 
 	def read_docs(self, path):
+		"""Load documents from a directory"""
 		docs=[]
 		fnames = os.listdir(path)
 		for fname in fnames:
@@ -34,8 +35,6 @@ class Corpus(object):
 			data.append(this_data)
 		return data
 
-
-
 	def __str__(self):
 		s=""
 		for d in self.documents:
@@ -56,10 +55,12 @@ class Document(object):
 
 
 	def preprocess(self):
+		"""downcase and remove punctuation"""
 		self.text = self.text.lower()
 		self.text = self.text.translate(None, string.punctuation)
 
 	def make_data(self):
+		"""make a feature value matrix (wordtype:frequency)"""
 		feat_dict={}
 		words = self.text.split()
 		for w in words:

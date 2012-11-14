@@ -3,10 +3,11 @@ import math
 
 class NaiveBayes(object):
 	def __init__(self):
+		#dictionaries mapping features and classes to their priors
 		self.classes={}
 		self.class_priors={}
 		self.feature_priors={}
-		self.feat_class_priors={}
+		self.feat_class_priors={} 
 
 	def make_priors(self,data):
 		#make the class priors
@@ -32,7 +33,7 @@ class NaiveBayes(object):
 			for c in feature_counts: self.feature_priors[c]=(feature_counts[c]/s)
 
 	def train(self, data):
-
+		#count and normalize feature:class co-occurrences
 		self.make_priors(data)
 		feat_class_counts={}
 		for feat in self.feature_priors.keys():
@@ -52,6 +53,7 @@ class NaiveBayes(object):
 
 
 	def test(self, data):
+		"""sum log probabilities for classes given features in test data"""
 		unseen=0
 		for d in data:
 			feats=d[0]
