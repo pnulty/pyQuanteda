@@ -107,8 +107,8 @@ print "testing: "
 for d in test_corp.documents:
 	print d
 
-train_data=train_corp.make_data()
-test_data=test_corp.make_data()
+train_data=train_corp.make_fvm()
+test_data=test_corp.make_fvm()
 
 data=iebud.make_data()
 nb=NaiveBayes()

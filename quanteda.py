@@ -3,7 +3,6 @@ import string
 
 class Corpus(object):
 	"""A list of documents"""
-
 	def __init__(self, path=None):
 		if not path==None:
 			self.documents = self.read_docs(path)
@@ -28,13 +27,13 @@ class Corpus(object):
 		for doc in self.documents:
 			doc.preprocess()
 
-	def make_data(self):
+	def make_fvms(self):
 		data=[]
 		for doc in self.documents:
-			this_data=doc.make_data()
+			this_data=doc.make_fvm()
 			data.append(this_data)
-		return data
-
+		self.fvms=data
+		return
 	def __str__(self):
 		s=""
 		for d in self.documents:
@@ -48,7 +47,7 @@ class Document(object):
 		self.text=text
 		self.fname=fname
 		self.variable=variable
-		self.feature_matrix=()
+		self.fvm=()
 
 	def __str__(self):
 		return "fname: %s variable: %s " % (self.fname, self.variable)
@@ -59,15 +58,14 @@ class Document(object):
 		self.text = self.text.lower()
 		self.text = self.text.translate(None, string.punctuation)
 
-	def make_data(self):
+	def make_fvm(self):
 		"""make a feature value matrix (wordtype:frequency)"""
 		feat_dict={}
 		words = self.text.split()
 		for w in words:
 			if w in feat_dict:
-				feat_dict[w]+=1
+				feat_dict[w]+=1.0
 			else:
-				feat_dict[w]=0
-		data=(feat_dict, self.variable)
-		return data
-
+				feat_dict[w]=1.0
+		self.fvm=feat_dict
+		return self.fvm
