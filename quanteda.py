@@ -17,7 +17,7 @@ class Corpus(object):
                 for fname in fnames:
                         f = open(os.path.join(path,fname))
                         text = f.read()
-                        d = Document(text, fname, fname)
+                        d = Document(text, fname)
                         docs.append(d)
                 return(docs)
 
@@ -58,6 +58,7 @@ class Document(object):
                 """downcase and remove punctuation"""
                 self.text = self.text.lower()
                 self.text = self.text.translate(None, string.punctuation)
+                self.text.strip()
 
         def make_data(self):
                 """make a feature value matrix (wordtype:frequency)"""

@@ -26,6 +26,7 @@ import re
 import sys
 import StringIO
 import getopt
+import quanteda
 
 
 class RegressiveImageryDictionary(object):
