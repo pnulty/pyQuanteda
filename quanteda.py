@@ -2,7 +2,7 @@ import os
 import string
 
 class Corpus(object):
-        """A list of documents"""
+        """A list of documents""" # Should this be a set?
 
         def __init__(self, path=None):
                 if not path==None:

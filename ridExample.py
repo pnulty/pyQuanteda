@@ -28,6 +28,10 @@ for speech in iebud.documents:
 	# get a dictionary of category counts from rid
 	cat_counts = (rid.analyze(speech.text).category_count)
 	thisDoc = (cat_counts, speech.variable)
+	for x in cat_counts:
+		print x
+		print cat_counts[x]
+	print speech.variable
 	data.append(thisDoc)
 
 
@@ -39,6 +43,7 @@ testData = data[9:]
 classifier = nltk.NaiveBayesClassifier.train(trainData)
 # regressive imagery doesn't appear ot predict gov or opp very well!
 print nltk.classify.accuracy(classifier, testData)
+print classifier.show_most_informative_features()
 
 
 
@@ -74,15 +79,12 @@ for movie in movies.documents:
 	for x in fdist:
 		if fdist[x] > 1: fdist[x]=True
 		else: fdist[x]=False
-		#print x
-		#print fdist[x]
 	curDoc = (fdist, movie.variable)
-
 	data.append(curDoc)
 
 trainData = data[:900]
 testData = data[900:]
 classifier = nltk.NaiveBayesClassifier.train(trainData)
-# regressive imagery doesn't appear ot predict gov or opp very well!
+
 print nltk.classify.accuracy(classifier, testData)
 print classifier.show_most_informative_features()
