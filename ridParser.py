@@ -3316,7 +3316,7 @@ EMOTIONS
 		AX (1)
 		AXE (1)
 		AXES (1)
-		BATTL* (1)
+		1* (BATTL)
 		BEAK* (1)
 		BEAT* (1)
 		BEATEN* (1)

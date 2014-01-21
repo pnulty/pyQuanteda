@@ -1,17 +1,19 @@
 from sklearn.naive_bayes import GaussianNB
+from sklearn.feature_extraction import DictVectorizer
 import numpy as np
-
+import os
+import ridParser
 
 path = '~/Dropbox/QUANTESS/corpora/iebudgets/budget_2010/'
 path = os.path.expanduser(path)		# get machine independent path
 fnames = os.listdir(path)
 docs = []
-labels =[]
+labels = []
 for fname in fnames:
         f = open(os.path.join(path,fname))
         text = f.read()
         docs.append(text)
-        label = "GOV" if "Green" in fname or "FF" in fname: else "OPP"
+        label = "GOV" if "Green" in fname or "FF" in fname else "OPP"
     	labels.append(label)
 
 # load the dictionary using rid.py
@@ -22,21 +24,24 @@ rid.load_exclusion_list_from_string(ridParser.DEFAULT_RID_EXCLUSION_LIST)
 data =[]
 vec = DictVectorizer()
 for speech in docs:
-	# set the class label according to filename
-	if "Green" in speech.fname or "FF" in speech.fname:
-		speech.variable = "GOV"
-	else:
-		speech.variable = "OPP"
 	# get a dictionary of category counts from rid
 	cat_counts = (rid.analyze(speech).category_count)
-	vec.fit_transform(cat_counts).toarray()
-	thisDoc = (cat_counts)
-	data.append(thisDoc)
+	for x in cat_counts:
+		print x
+		print cat_counts[x]
+
+	cat_counts = vec.fit_transform(cat_counts).toarray()
+	print(type(cat_counts))
+	data.append(cat_counts.flatten())
 
 clf = GaussianNB()
-clf.fit(data[0:5], lables[0:5])
-print(clf.predict(data[5:10])
+data = np.array(data)
+labels = np.array(labels)
 
-# 'data' is now the format nltk classifiers expect: a list of tuples
-#  each element is: (dictionary_of_category_counts, class__label)
-# we now shuffle it and split it into 9 training and examples, the rest test
+print
+print
+
+for d in data: print(d.shape)
+for d in labels: print(d.shape)
+clf.fit(data[0:5], labels[0:5])
+#print(clf.predict(data[5:10]))
