@@ -10,7 +10,7 @@ class Corpus(object):
                 else:
                         self.documents = []
 
-        def read_docs(self, path):
+        def read_docs(self, path, variables=None):
                 """Load documents from a directory and append to corpus"""
                 docs=[]
                 fnames = os.listdir(path)
@@ -18,6 +18,7 @@ class Corpus(object):
                         f = open(os.path.join(path,fname))
                         text = f.read()
                         d = Document(text, fname)
+                        if variables is not None: d.add_variables(variables)
                         docs.append(d)
                 return(docs)
 

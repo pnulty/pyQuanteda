@@ -1,4 +1,3 @@
-import urllib2
 import nltk
 import os
 import quanteda
@@ -33,16 +32,16 @@ for man in ukMan.documents:
 
 data =[]
 for man in ukMan.documents:
-	curFeats = dict(zip(fdist.keys()[0:500], ["no" for k in range(0,500)] ))
+	curFeats = dict(zip(fdist.keys()[0:500], [False for k in range(0,500)] ))
 	toks = nltk.tokenize.word_tokenize(man.text)
 	curDist = nltk.FreqDist(toks)
 	for x in curDist:
-		if curDist[x] > 2 and x in curFeats.keys(): curFeats[x]="yes"
+		if curDist[x] > 2 and x in curFeats.keys(): curFeats[x]=True
 	data.append( (curFeats, man.variables["wing"]) )
 random.shuffle(data)
-random.shuffle(bernData)
+print len(data)
 trainData = data[0:80]
 testData = data[80:]
-classifier = nltk.NaiveBayesClassifier.train(trainData)
+classifier = nltk.DecisionTreeClassifier.train(trainData)
 print nltk.classify.accuracy(classifier, testData)
 print classifier.show_most_informative_features()
