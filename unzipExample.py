@@ -25,10 +25,7 @@ with zipfile.ZipFile("/home/paul/UK_Manifestos.zip") as myzip:
 
 ukMan.preprocess()
 
-fdist = nltk.FreqDist()
-for man in ukMan.documents:
-	toks = nltk.tokenize.word_tokenize(man.text)
-	fdist.update(toks)
+fdist = ukMan.make_fvm()
 
 data =[]
 for man in ukMan.documents:
@@ -39,9 +36,10 @@ for man in ukMan.documents:
 		if curDist[x] > 2 and x in curFeats.keys(): curFeats[x]=True
 	data.append( (curFeats, man.variables["wing"]) )
 random.shuffle(data)
-print len(data)
-trainData = data[0:80]
-testData = data[80:]
-classifier = nltk.DecisionTreeClassifier.train(trainData)
+trainData = data[0:85]
+testData = data[85:]
+classifier = nltk.NaiveBayesClassifier.train(trainData)
 print nltk.classify.accuracy(classifier, testData)
 print classifier.show_most_informative_features()
+classifier = nltk.DecisionTreeClassifier.train(trainData)
+print nltk.classify.accuracy(classifier, testData)

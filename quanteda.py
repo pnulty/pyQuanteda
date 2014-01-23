@@ -1,6 +1,6 @@
 import os
 import string
-
+import nltk
 class Corpus(object):
         """A list of documents"""
 
@@ -32,11 +32,11 @@ class Corpus(object):
                         doc.preprocess()
 
         def make_fvm(self):
-                data=[]
+                fdist = nltk.FreqDist()
                 for doc in self.documents:
-                        this_data=doc.make_data()
-                        data.append(this_data)
-                return data
+                        toks = nltk.tokenize.word_tokenize(doc.text)
+                        fdist.update(toks)
+                return fdist
 
         def __str__(self):
                 s=""
@@ -67,7 +67,7 @@ class Document(object):
                 self.variables.update(new_vars)
 
         def make_fvm(self, target="missing"):
-                """make a word frequyency matrix (wordtype:frequency Dict)"""
+                """make a word frequency matrix (wordtype:frequency Dict)"""
                 feat_dict={}
                 words = self.text.split()
                 for w in words:
