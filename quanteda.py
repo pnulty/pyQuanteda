@@ -1,72 +1,92 @@
 import os
 import string
-import nltk
+#import nltk
+import re
+import codecs
+#from pandas import Series, DataFrame
+#import pandas as pd
 class Corpus(object):
-        """A list of documents"""
+        """A grouping of documents and associated data"""
 
         def __init__(self, path=None):
                 if not path==None:
                         self.documents = self.read_docs(path)
                 else:
                         self.documents = []
+                        self.words = []
+                        self.vocab = []
+                        #self.fdist = nltk.FreqDist()
 
         def read_docs(self, path, variables=None):
                 """Load documents from a directory and append to corpus"""
                 docs=[]
                 fnames = os.listdir(path)
                 for fname in fnames:
-                        f = open(os.path.join(path,fname))
+                        f =  codecs.open(os.path.join(path,fname), encoding='utf-8', mode='r')
                         text = f.read()
                         d = Document(text, fname)
                         if variables is not None: d.add_variables(variables)
                         docs.append(d)
                 return(docs)
 
-        def add_docs(self, new_docs):
+        def add_docs(self, *args):
                 """append a list of documents to the corpus"""
-                self.documents.extend(new_docs)
-
+                self.documents.extend(args)
 
         def preprocess(self):
+                """ preprocesses every document in the corpus"""
                 for doc in self.documents:
                         doc.preprocess()
 
-        def make_fvm(self):
+        def make_fdist(self):
                 fdist = nltk.FreqDist()
                 for doc in self.documents:
                         toks = nltk.tokenize.word_tokenize(doc.text)
-                        fdist.update(toks)
+                        doc.words = toks
+                        self.fdist.update(toks)
+                self.vocab.extend(self.fdist.keys())
+                return fdist
+
+        def make_dfm(self):
+                """ Make a document term (or document feature) matrix.
+                nltk.tokenize is quite slow, so using ordinary .split()
+                """
+                fdist = nltk.FreqDist()
+                for doc in self.documents:
+                        #toks = nltk.tokenize.word_tokenize(doc.text)
+                        toks = doc.text.split()
+                        self.fdist.update(toks)
+                self.vocab.extend(self.fdist.keys())
                 return fdist
 
         def __str__(self):
                 s=""
                 for d in self.documents:
-                        s=s+"fname: %s variable: %s \n" % (d.fname, d.variable)
+                        s=s+"fname: %s variables: %s \n" % (d.fname, d.variables)
                 return s
 
 class Document(object):
         """A document associated with a dictionary of variables"""
 
-        def __init__(self, text, fname, variable=None):
+        def __init__(self, text, fname, variables={}):
                 self.text=text
                 self.fname=fname
-                self.variables={}
-                self.feature_matrix=()
+                self.variables=variables
 
         def __str__(self):
-                return "fname: %s variable: %s " % (self.fname, self.variables)
+                return "fname: %s variables: %s " % (self.fname, self.variables)
 
 
         def preprocess(self):
                 """downcase and remove punctuation"""
                 self.text = self.text.lower()
-                self.text = self.text.translate(None, string.punctuation)
+                self.text=re.sub("[\.\t\,\:;\(\)\.\?\"\'']", "", self.text, 0, 0)
                 self.text.strip()
 
         def add_variables(self, new_vars):
                 self.variables.update(new_vars)
 
-        def make_fvm(self, target="missing"):
+        def make_dfm(self, target="missing"):
                 """make a word frequency matrix (wordtype:frequency Dict)"""
                 feat_dict={}
                 words = self.text.split()
