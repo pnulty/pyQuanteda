@@ -13,13 +13,21 @@ older Windows encodings better than magic (which uses unix file -ib)
 Chardet is used by default, to use libmagic pass 'magic' as the
 thrd argument
 
-Example:
+Guide:
 
-python make_unicode /path/to/infiles /path/to/outfiles
+First, install libmagic or chardet or both:
 
-and for libmagic:
+> pip install libmagic
 
-python make_unicode /path/to/infiles /path/to/outfiles magic
+> pip install chardet
+
+Then to detect and change the encoding of a directory of files:
+
+> python make_unicode /path/to/infiles /path/to/outfiles
+
+or using libmagic:
+
+> python make_unicode /path/to/infiles /path/to/outfiles magic
 
 
 """
