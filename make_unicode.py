@@ -23,21 +23,21 @@ First, install libmagic or chardet or both:
 
 Then to detect and change the encoding of a directory of files:
 
-> python make_unicode /path/to/infiles /path/to/outfiles
+> python make_unicode /path/to/infiles /path/to/outfiles/
 
 or using libmagic:
 
-> python make_unicode /path/to/infiles /path/to/outfiles magic
+> python make_unicode /path/to/infiles /path/to/outfiles/ magic
 
 
 """
 __author__ = 'Paul Nulty <paul.nulty@gmail.com>'
 __copyright__ = 'GPL'
-import chardet
+
 import os
 import sys
 import codecs
-import magic
+
 
 
 __author__ = "Paul Nulty"
@@ -46,6 +46,7 @@ __license__ = "GPL"
 
 
 def chardet_convert(inpath, outpath, verbose=True):
+	import chardet
 	infiles= os.listdir(inpath)
 	for f in infiles:
 		rawdata=open(inpath+f,"r").read()
@@ -54,12 +55,14 @@ def chardet_convert(inpath, outpath, verbose=True):
 			print f
 			print res
 			print
+		if res["encoding"]==None: res["encoding"]='latin-1'
 		output = open(inpath+f,"r").read()
 		output = unicode(output, encoding=res["encoding"])
 		outfile = codecs.open(outpath+f,"w")
 		outfile.write(output.encode('utf-8'))
 
 def magic_convert(inpath, outpath, verbose=True):
+	import magic
 	infiles= os.listdir(inpath)
 	for f in infiles:
 		blob = open(inpath+f).read()
@@ -83,7 +86,7 @@ def magic_convert(inpath, outpath, verbose=True):
 if __name__=="__main__":
 	if len(sys.argv) < 3:
 		print "please specify input and output directories, e.g. python \
-		make_unicode.py /path/to/files /path/to/output"
+		make_unicode.py /path/to/files/ /path/to/output/"
 	inp = sys.argv[1]
 	out = sys.argv[2]
 	if len(sys.argv) < 4:

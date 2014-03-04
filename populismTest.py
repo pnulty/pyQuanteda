@@ -10,8 +10,8 @@ import chardet
 
 def fuzzy_match(asterisk, word):
 	match = False
-	#print type(asterisk)
-	#print type(word)
+	print type(asterisk)
+	print type(word)
 	if asterisk[-1] == '*' and asterisk[0] == "*":
 	    if asterisk[1:-1] in word: match = True
 	elif asterisk[-1] == '*':
@@ -27,18 +27,38 @@ def fuzzy_match(asterisk, word):
 def read_dictionary(path):
 	""" Kohei's dictreading function"""
 	dictionary={}
-	f = codecs.open(path, 'r', 'utf-8-sig')
+	f = open(path, 'r')
 	lines=f.readlines()
 	f.close()
 	for line in lines:
+		line = unicode(line,'utf-8')
 		if line[0] != '#' and len(line.strip()):
 			line = line.replace(';', ',')
 			label = line.strip().split(':')[0].split(',')
 			words = line.strip().split(':')[1].split(',')
-			words = [unicode(w.strip())   for w in words]
+			words = [(w.strip())   for w in words]
 			dictionary[label[2]] = words
 	return(dictionary)
 
+
+
+def get_docs_names(path):
+	manifs=quanteda.Corpus()
+	for f in os.listdir(path):
+		print f
+		text = open(path+f).read()
+		text = unicode(text, 'utf-8')
+		bits = f.split('_')
+		country = bits[0]
+		level = bits[1]
+		year = bits[2]
+		lang = bits[3]
+		party = bits[4].replace('.txt','')
+		d = quanteda.Document(text, fname=f, variables={"year":year, "country":country.upper(),\
+		 "party":party, "lang":lang, "level":level})
+		d.preprocess()
+		manifs.add_docs(d)
+	return manifs
 
 
 
@@ -93,8 +113,9 @@ for line in leglines:
 	party = temp[1]
 	legend[key]=party
 
-path="/home/paul/Dropbox/populism/utxt/"
-manifs = get_docs_folders(path)
+path="/home/paul/corpora/800ManU/"
+#manifs = get_docs_folders(path)
+manifs = get_docs_names(path)
 
 for doc in manifs.documents:
 	if doc.variables['party'].isdigit():
@@ -104,14 +125,20 @@ for doc in manifs.documents:
 			doc.variables['party']=" "
 
 
-# f=open('kwic_output.csv', 'w')
-# print popwords
-# for doc in manifs.documents:
-# 	print doc.variables
-# 	ac = kwic(popwords[doc.variables['country']], doc )
-# 	for c in ac:
-# 		f.write(str(c))
-# 		f.write('\n')
+
+f=open('kwic_output.csv', 'w')
+print popwords
+for doc in manifs.documents:
+	print doc.variables
+	if doc.variables['country'] in popwords:
+		ac = kwic(popwords[doc.variables['country']], doc )
+		for c in ac:
+			f.write(str(c))
+			f.write('\n')
+	else:
+		print "%s dictionary not found." % doc.variables['country']
+
+exit()
 
 
 
@@ -133,17 +160,19 @@ for d in manifs.documents:
 	print popcounts
 	f.write(d.fname + ',')
 	for v in d.variables: f.write(v+':' +d.variables[v].encode('utf8', 'replace')+ ',')
+	totalWords = popcounts+nonpopcounts
+	popPercent = (popcounts*100.0)/totalWords
 	f.write( str(popcounts) +',')
-	f.write( str(popcounts+nonpopcounts)+',')
-	f.write( str(popcounts/nonpopcounts)+'\n')
+	f.write( str(totalWords)+',')
+	f.write( str(popPercent)+'\n')
 	print d.fname
 	print d.variables
 	print "Populist words:  %f " % (popcounts)
-	print "Total words:  %f " % (popcounts+nonpopcounts)
-	print "Populist Percentage: %f" % (popcounts/nonpopcounts)
+	print "Total words:  %f " % (totalWords)
+	print "Populist Percentage: %f" % (popPercent)
 	print
 
-exit()
+
 
 
 
